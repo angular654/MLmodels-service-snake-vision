@@ -1,0 +1,4 @@
+uvicrorn
+fastapi
+pika
+pydantic
