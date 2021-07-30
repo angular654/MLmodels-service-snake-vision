@@ -2,3 +2,5 @@ uvicrorn
 fastapi
 pika
 pydantic
+PyJWT==2.1.0
+python-decouple==3.4

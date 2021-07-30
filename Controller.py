@@ -2,8 +2,9 @@ import socket
 from pydantic import BaseModel
 from time import gmtime, strftime
 from Messages import MessagesController
-
+import auth.auth_handler
 class RequestData(BaseModel):
+    user_token: str
     objects: list
     script_name: str
     user_config_name: str
@@ -20,6 +21,7 @@ class Controller:
 
     def upload_info(self, req:RequestData):
         if req:
-            self.message_ctrl.push_message(f'{req.devices} / {strftime("%Y-%m-%d %H:%M:%S", gmtime())} /  {req.user_config_name} / {req.script_name}')
+            token = auth.auth_handler.signJWT(req.user_token)
+            self.message_ctrl.push_message(f'devices:{req.devices}, time:{strftime("%Y-%m-%d %H:%M:%S", gmtime())}, config_name:{req.user_config_name}, script_name:{req.script_name}, user_token:{token}')
             return {"time": strftime("%Y-%m-%d %H:%M:%S", gmtime()),
-                    "upload_status":"Script was successfully uploaded"}
+                    "upload_status":"Script was successfully uploaded", "acess_token": token}

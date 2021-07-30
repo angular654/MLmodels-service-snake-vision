@@ -27,4 +27,3 @@ def read_root():
 @app.post("/upload-script")
 def upload(data: RequestData):
     return ctrl.upload_info(data)
-
