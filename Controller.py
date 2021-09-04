@@ -1,7 +1,8 @@
+import json
 import socket
 from pydantic import BaseModel
 from time import gmtime, strftime
-from Messages import MessagesController
+from RedisSender import Redis
 import auth.auth_handler
 class RequestData(BaseModel):
     user_token: str
@@ -12,7 +13,7 @@ class RequestData(BaseModel):
 
 
 class Controller:
-    message_ctrl = MessagesController()
+    message_ctrl = Redis()
     def __init__(self):
         pass
 
@@ -22,6 +23,14 @@ class Controller:
     def upload_info(self, req:RequestData):
         if req:
             token = auth.auth_handler.signJWT(req.user_token)
-            self.message_ctrl.push_message(f'devices:{req.devices}, time:{strftime("%Y-%m-%d %H:%M:%S", gmtime())}, config_name:{req.user_config_name}, script_name:{req.script_name}, user_token:{token}')
+            data = {
+                "type": "script-creation",
+                "devices": req.devices,
+                "time": strftime("%Y-%m-%d %H:%M:%S", gmtime()),
+                "config_name": req.user_config_name,
+                "script_name": req.script_name,
+                "token": req.user_token
+            }
+            self.message_ctrl.send_data(json.dumps(data))
             return {"time": strftime("%Y-%m-%d %H:%M:%S", gmtime()),
                     "upload_status":"Script was successfully uploaded", "acess_token": token}
