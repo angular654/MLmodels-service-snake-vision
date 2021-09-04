@@ -1,5 +1,4 @@
 import redis
-
 class Redis:
     client = ''
     def __init__(self):
